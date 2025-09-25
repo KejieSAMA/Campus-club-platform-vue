@@ -222,6 +222,7 @@ async function loadReplies() {
 	try {
 		const { data } = await http.get(`/clubs/${clubId}/posts/${postId}/replies`)
 		replies.value = data.replies || []
+		console.log(replies.value)
 	} catch (error) {
 		console.error('Failed to load replies:', error)
 	}
@@ -442,24 +443,25 @@ function getNestedReplyText(child, parentReply) {
 function getClubRole(reply) {
 	// 使用后端返回的clubRole信息
 	if (reply.clubRole) {
-		// 根据角色类型返回中文显示
-		switch (reply.clubRole) {
-			case 'owner':
-				return '社团团长'
-			case 'manager':
-				return '社团管理员'
-			case 'member':
-				return '社团成员'
-			case 'visitor':
-				return '游客'
-			default:
-				return reply.clubRole || '游客'
-		}
+	// 根据角色类型返回中文显示，与社团管理页面保持一致
+	switch (reply.clubRole) {
+		case 'owner':
+			return '团长'
+		case 'manager':
+		case 'admin':
+			return '管理员'
+		case 'member':
+			return '成员'
+		case 'visitor':
+			return '游客'
+		default:
+			return reply.clubRole || '游客'
+	}
 	}
 
 	// 如果没有clubRole信息，检查是否是社团团长
 	if (clubInfo.value && clubInfo.value.owner_id === reply.author?.id) {
-		return '社团团长'
+		return '团长'
 	}
 
 	return '游客'
